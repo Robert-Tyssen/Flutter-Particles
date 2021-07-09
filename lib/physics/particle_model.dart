@@ -2,7 +2,7 @@ import 'dart:math';
 
 class ParticleModel {
 
-  static const Point _ZERO_POINT = Point<double>(0, 0);
+  static const Point<double> _ZERO_POINT = Point<double>(0, 0);
 
   // Mass [kg] and density [kg/m3] of particle
   double mass;
@@ -13,9 +13,9 @@ class ParticleModel {
 
   // Position [m], velocity[m/s] and force [N] vectors in (x, y) dims
   Point<double> position;
-  Point velocity;
-  Point pressureForce;
-  Point viscosityForce;
+  Point<double> velocity;
+  Point<double> pressureForce;
+  Point<double> viscosityForce;
 
   ParticleModel({
     this.mass = 0.001,

@@ -4,19 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:smooth_particle_flutter/physics/fluid_model.dart';
 
 class SimulationPainter extends CustomPainter {
-  late final FluidModel _simulation;
+  late final FluidModel sim;
 
-  SimulationPainter() {
-    _simulation = FluidModel(h: 0.01, dt: Duration(milliseconds: 10));
-
-    List.generate(
-      10,
-      (index) => _simulation.addParticleAtPosition(
-        Random().nextDouble(),
-        Random().nextDouble(),
-      ),
-    );
-  }
+  SimulationPainter({required this.sim});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -31,7 +21,7 @@ class SimulationPainter extends CustomPainter {
     canvas.drawRect(Rect.fromLTRB(0, 0, size.width, size.width), paint);
 
     
-    _simulation.getParticlePostions().forEach((pos) {
+    sim.getParticlePostions().forEach((pos) {
       canvas.drawCircle(
           Offset(pos.x * size.width, pos.y * size.height), 10, paint);
     });

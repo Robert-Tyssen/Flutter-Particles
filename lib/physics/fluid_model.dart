@@ -5,11 +5,16 @@ import 'dart:math';
 import 'package:smooth_particle_flutter/physics/particle_model.dart';
 
 class FluidModel {
+
+  // Gravity
+  static const g = Point<double>(0, 0.01);
+
   // Smoothing length
   final double h;
 
   // Simulation delta-time
   final Duration dt;
+  Timer? timer;
 
   // Particles being simulated
   final particles = List<ParticleModel>.empty(growable: true);
@@ -17,19 +22,17 @@ class FluidModel {
   FluidModel({required this.h, required this.dt});
 
   void startSimulation() {
-    throw UnimplementedError();
+    timer = Timer.periodic(dt, (timer) { _simulationLoop(timer);});
   }
 
   void stopSimulation() {
-    throw UnimplementedError();
+    timer?.cancel();
   }
 
   void _simulationLoop(Timer dt) async {
     //_calculateDensities();
     //_calculateForces();
-    //_calculatePositions();
-
-    throw UnimplementedError();
+    _calculatePositions();
   }
 
   void _calculateDensities(double dt) {
@@ -40,8 +43,12 @@ class FluidModel {
     throw UnimplementedError();
   }
 
-  void _calculatePositions(double dt) {
-    throw UnimplementedError();
+  void _calculatePositions() {
+    particles.forEach((element) {
+      var acc = (element.pressureForce + element.viscosityForce + g) * (1.0 / element.mass);
+      element.velocity += acc * (dt.inMilliseconds.toDouble() / 1000.0);
+      element.position += element.velocity * (dt.inMilliseconds.toDouble() / 1000.0);
+    });
   }
 
   void addParticleAtPosition(double x, double y) {
