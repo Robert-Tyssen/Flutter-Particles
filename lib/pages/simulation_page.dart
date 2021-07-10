@@ -15,10 +15,10 @@ class _SimulationState extends State<SimulationPage> {
   late FluidModel _sim;
 
   _SimulationState() {
-    _sim = FluidModel(h: 0.01, dt: Duration(milliseconds: 33));
+    _sim = FluidModel(h: 0.05, dt: Duration(milliseconds: 33));
 
     List.generate(
-      10,
+      300,
       (index) => _sim.addParticleAtPosition(
         Random().nextDouble(),
         Random().nextDouble(),
@@ -40,11 +40,12 @@ class _SimulationState extends State<SimulationPage> {
     return Scaffold(
       appBar: AppBar(title: Text('Simulation Page')),
       body: Center(
-        child: Container(
-          height: 500,
-          width: 500,
-          child: CustomPaint(
-            painter: SimulationPainter(sim: _sim),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            child: CustomPaint(
+              painter: SimulationPainter(sim: _sim),
+            ),
           ),
         ),
       ),

@@ -2,14 +2,16 @@ import 'dart:math';
 
 class ParticleModel {
 
-  static const Point<double> _ZERO_POINT = Point<double>(0, 0);
+  static Point<double> get _zeroPoint => const Point<double>(0, 0);
+
+  // Unique particle id
+  final int id;
 
   // Mass [kg] and density [kg/m3] of particle
   double mass;
-  double density;
 
-  // Added density created by neighboring particles
-  double _additiveDensity = 0;
+  // Density created by force of neighboring particles/boundaries
+  double density;
 
   // Position [m], velocity[m/s] and force [N] vectors in (x, y) dims
   Point<double> position;
@@ -18,11 +20,18 @@ class ParticleModel {
   Point<double> viscosityForce;
 
   ParticleModel({
-    this.mass = 0.001,
-    this.density = 1000,
+    this.mass = 1,
+    this.density = 1,
     required this.position,
-    this.velocity = _ZERO_POINT,
-    this.pressureForce = _ZERO_POINT,
-    this.viscosityForce = _ZERO_POINT,
+    required this.id,
+    this.velocity = const Point<double>(0, 0),
+    this.pressureForce = const Point<double>(0, 0),
+    this.viscosityForce = const Point<double>(0, 0),
   });
+
+  void clearDensityAndForces() {
+    density = 0;
+    pressureForce = _zeroPoint;
+    viscosityForce = _zeroPoint;
+  }
 }

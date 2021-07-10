@@ -21,9 +21,10 @@ class SimulationPainter extends CustomPainter {
     canvas.drawRect(Rect.fromLTRB(0, 0, size.width, size.width), paint);
 
     
+    // TODO - review particle rendering
     sim.getParticlePostions().forEach((pos) {
       canvas.drawCircle(
-          Offset(pos.x * size.width, pos.y * size.height), 10, paint);
+          Offset(pos.x * size.width, pos.y * size.height), sim.h / 2 * size.height, paint);
     });
 
     // TODO: implement paint
