@@ -19,7 +19,7 @@ class FluidModel {
 
   // Density of fluid at rest
   final double restDensity;
-  final double k = 0.5E-5; // TODO - better gas constant?
+  final double k = 1000; // TODO - better gas constant?
 
   // Simulation delta-time
   final Duration dt;
@@ -28,7 +28,7 @@ class FluidModel {
   // Particles being simulated
   final particles = List<ParticleModel>.empty(growable: true);
 
-  FluidModel({required this.h, required this.dt, this.restDensity = 1});
+  FluidModel({required this.h, required this.dt, this.restDensity = 1000});
 
   void startSimulation() {
     timer = Timer.periodic(dt, (timer) { _simulationLoop(timer);});
@@ -40,7 +40,7 @@ class FluidModel {
 
   void _simulationLoop(Timer dt) async {
     // Reset densities/forces each iteration
-    particles.forEach((p) => p.clearDensityAndForces());
+    particles.forEach((p) {p.clearDensityAndForces();});
 
     _calculateDensities();
     _calculateForces();
@@ -50,6 +50,7 @@ class FluidModel {
   void _calculateDensities() {
     // TODO - better neighbor lookup for performance
     particles.forEach((p) {
+      p.density = restDensity;
       particles.where((n) => n.id != p.id).forEach((n) {
         var dPos = p.position - n.position;
         if (dPos.magnitude <= h) {
@@ -73,25 +74,36 @@ class FluidModel {
       });
     });
 
-    // TODO - proper boundary handling
-    particles.forEach((p) {
-      // Left
-      if (p.position.x < h) if (p.position.x > 1 - h) p.position = Vec2(h, p.position.y);
-      // Right
-      if (p.position.x > 1 - h) p.position = Vec2(1-h, p.position.y);
-      // Bottom
-      if (p.position.y > 1 - h) p.position = Vec2(p.position.x, 1 - h);
-      // Not implemented
-    });
-
   }
 
   void _calculatePositions() {
+
+    final  elapsedTime = dt.inMilliseconds.toDouble() / 1000.0;
+
     particles.forEach((element) {
-      var acc = (element.pressureForce + element.viscosityForce + g) * (1.0 / element.mass);
-      element.velocity += acc * (dt.inMilliseconds.toDouble() / 1000.0);
-      element.velocity *= 0.9;// TODO - better friction loss handling to prevent craziness
+      var acc = (element.pressureForce + element.viscosityForce) * (1.0 / element.density) * elapsedTime + g;
+      element.velocity += acc * elapsedTime;
+      if (element.velocity.magnitude > 1) element.velocity *= 1 / element.velocity.magnitude;
       element.position += element.velocity * (dt.inMilliseconds.toDouble() / 1000.0);
+
+      //if (element.position.x < 0) element.position = Vec2(0, element.position.y);
+      //if (element.position.x > 1) element.position = Vec2(1, element.position.y);
+
+      if (element.position.x < 0) {
+        element.position = Vec2(Random().nextDouble() * 0.0001, element.position.y);
+        element.velocity = Vec2(0, element.velocity.y);
+      }
+
+      if (element.position.x > 1) {
+        element.position = Vec2(1 - Random().nextDouble() * 0.0001, element.position.y);
+        element.velocity = Vec2(0, element.velocity.y);
+      }
+      
+      if (element.position.y > 1) {
+        element.position = Vec2(element.position.x, 1 - Random().nextDouble() * 0.0001);
+        element.velocity = Vec2(element.velocity.x, 0);
+      }
+
     });
   }
 

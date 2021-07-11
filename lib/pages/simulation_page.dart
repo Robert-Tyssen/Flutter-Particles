@@ -15,10 +15,10 @@ class _SimulationState extends State<SimulationPage> {
   late FluidModel _sim;
 
   _SimulationState() {
-    _sim = FluidModel(h: 0.05, dt: Duration(milliseconds: 33));
+    _sim = FluidModel(h: 0.05, dt: Duration(milliseconds: 8));
 
     List.generate(
-      300,
+      200,
       (index) => _sim.addParticleAtPosition(
         Random().nextDouble(),
         Random().nextDouble(),
